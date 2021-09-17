@@ -10,7 +10,7 @@ async fn main() {
     let subscriber = get_subscriber("podinfo".into(), "info".into(), std::io::stdout);
     init_subscriber(subscriber);
     let (tx, rx) = tokio::sync::oneshot::channel::<()>();
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
     let apps_route = startup().layer(
         ServiceBuilder::new()
             .layer(TraceLayer::new_for_http())
