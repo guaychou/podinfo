@@ -6,5 +6,5 @@ RUN RUSTFLAGS="-C link-arg=-s" cargo build --release
 FROM gcr.io/distroless/cc-debian10
 ENV TZ="Asia/Jakarta"
 WORKDIR /app
-COPY --from=build-env /app/target/release/ebisu /app
+COPY --from=build-env /app/target/release/podinfo /app
 CMD ["./ebisu"]
