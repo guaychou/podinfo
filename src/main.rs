@@ -2,7 +2,10 @@ use podinfo::startup::startup;
 use podinfo::telemetry::{get_subscriber, init_subscriber};
 use std::net::SocketAddr;
 use tower::ServiceBuilder;
-use tower_http::trace::TraceLayer;
+use tower_http::{
+    add_extension::AddExtensionLayer,
+    trace::TraceLayer,
+};
 use tracing_log::log::error;
 
 #[tokio::main]
@@ -14,6 +17,9 @@ async fn main() {
     let apps_route = startup().layer(
         ServiceBuilder::new()
             .layer(TraceLayer::new_for_http())
+            .load_shed()
+            .concurrency_limit(10)
+            .rate_limit(10, Duration::from_secs(2))
             .into_inner(),
     );
 
