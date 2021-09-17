@@ -1,11 +1,10 @@
+use podinfo::error::handle_error;
 use podinfo::startup::startup;
 use podinfo::telemetry::{get_subscriber, init_subscriber};
 use std::net::SocketAddr;
+use std::time::Duration;
 use tower::ServiceBuilder;
-use tower_http::{
-    add_extension::AddExtensionLayer,
-    trace::TraceLayer,
-};
+use tower_http::trace::TraceLayer;
 use tracing_log::log::error;
 
 #[tokio::main]
@@ -14,14 +13,18 @@ async fn main() {
     init_subscriber(subscriber);
     let (tx, rx) = tokio::sync::oneshot::channel::<()>();
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
-    let apps_route = startup().layer(
-        ServiceBuilder::new()
-            .layer(TraceLayer::new_for_http())
-            .load_shed()
-            .concurrency_limit(10)
-            .rate_limit(10, Duration::from_secs(2))
-            .into_inner(),
-    );
+    let apps_route = startup()
+        .layer(
+            ServiceBuilder::new()
+                .load_shed()
+                .buffer(5)
+                .concurrency_limit(5)
+                .rate_limit(5, Duration::from_secs(1))
+                .layer(TraceLayer::new_for_http())
+                .into_inner(),
+        )
+        .handle_error(handle_error)
+        .check_infallible();
 
     let server = axum::Server::bind(&addr)
         .serve(apps_route.into_make_service())
