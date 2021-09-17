@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podinfo
+  namespace: default
+  labels:
+    app: podinfo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: podinfo
+  template:
+    metadata:
+      labels:
+        app: podinfo
+    spec:
+      containers:
+      - image: lordchou/podinfo:v0.1.0
+        imagePullPolicy: Always
+        name: podinfo
+        env:
+        - name: TZ
+          value: "Asia/Jakarta"
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1024Mi
+          requests:
+            cpu: 10m
+            memory: 128Mi
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 15
