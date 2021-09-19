@@ -21,8 +21,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                 .layer(TraceLayer::new_for_http())
                 .into_inner(),
         )
-        .handle_error(handle_error)
-        .check_infallible();
+        .handle_error(handle_error);
 
     axum::Server::bind(&addr)
         .serve(apps_route.into_make_service())
