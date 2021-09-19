@@ -16,7 +16,6 @@ async fn main() {
     let apps_route = startup()
         .layer(
             ServiceBuilder::new()
-                .load_shed()
                 .buffer(5)
                 .concurrency_limit(5)
                 .rate_limit(5, Duration::from_secs(1))
