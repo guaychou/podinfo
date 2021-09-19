@@ -15,6 +15,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
     let apps_route = startup()
         .layer(
             ServiceBuilder::new()
+                .load_shed()
                 .buffer(50)
                 .concurrency_limit(25)
                 .rate_limit(25, Duration::from_secs(5))
