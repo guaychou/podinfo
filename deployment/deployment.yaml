@@ -16,7 +16,7 @@ spec:
         app: podinfo
     spec:
       containers:
-      - image: lordchou/podinfo:v0.1.4
+      - image: lordchou/podinfo:v0.1.6
         imagePullPolicy: Always
         name: podinfo
         env:
