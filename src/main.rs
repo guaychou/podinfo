@@ -16,9 +16,9 @@ async fn main() -> Result<(), Box<dyn Error>>{
         .layer(
             ServiceBuilder::new()
                 .load_shed()
-                .buffer(50)
-                .concurrency_limit(100)
-                .rate_limit(100, Duration::from_secs(3))
+                .buffer(25)
+                .concurrency_limit(50)
+                .rate_limit(50, Duration::from_secs(3))
                 .layer(TraceLayer::new_for_http())
                 .into_inner(),
         )

@@ -41,7 +41,7 @@ pub async fn internalservererror() -> impl IntoResponse {
 // basic handler that responds with health
 pub async fn health() -> impl IntoResponse {
     (
-        StatusCode::SERVICE_UNAVAILABLE,
+        StatusCode::OK,
         Json(json!({
             "code" : 200,
             "message" : "Oeeeei, I'm healthy",
