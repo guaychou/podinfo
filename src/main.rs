@@ -5,37 +5,27 @@ use std::net::SocketAddr;
 use std::time::Duration;
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
-use tracing_log::log::error;
+use std::error::Error;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn Error>>{
     let subscriber = get_subscriber("podinfo".into(), "info".into(), std::io::stdout);
     init_subscriber(subscriber);
-    let (tx, rx) = tokio::sync::oneshot::channel::<()>();
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
     let apps_route = startup()
         .layer(
             ServiceBuilder::new()
-                .buffer(5)
-                .concurrency_limit(5)
-                .rate_limit(5, Duration::from_secs(1))
+                .buffer(50)
+                .concurrency_limit(25)
+                .rate_limit(25, Duration::from_secs(5))
                 .layer(TraceLayer::new_for_http())
                 .into_inner(),
         )
         .handle_error(handle_error)
         .check_infallible();
 
-    let server = axum::Server::bind(&addr)
+    axum::Server::bind(&addr)
         .serve(apps_route.into_make_service())
-        .with_graceful_shutdown(async {
-            rx.await.ok();
-        });
-
-    // Await the `server` receiving the signal...
-    if let Err(e) = server.await {
-        error!("server error: {}", e);
-    }
-
-    // And later, trigger the signal by calling `tx.send(())`.
-    let _ = tx.send(());
+        .await?;
+    Ok(())
 }

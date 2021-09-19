@@ -6,5 +6,7 @@ pub fn startup() -> Router<BoxRoute> {
         .route("/", get(root))
         .route("/notfound", get(fourofour))
         .route("/internalservererror", get(internalservererror))
+        .route("/health", get(health))
+        .route("/terminate", get(terminate))
         .boxed()
 }
